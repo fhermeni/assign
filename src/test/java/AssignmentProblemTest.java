@@ -15,7 +15,8 @@ public class AssignmentProblemTest {
               subjects.add("subject " + i);
           }
 
-          Applications a = new Applications(subjects);
+        Applications a = new Applications(subjects);
+
         List<Application> apps = new ArrayList<>();
           for (int i = 0; i < 10; i++) {
               apps.add(a.add("group" + i, pick(subjects, 3)));
@@ -28,6 +29,7 @@ public class AssignmentProblemTest {
         System.out.println(as);
         as.printStatistics();
 
+        System.out.println(as.toJSONString());
         Assert.fail();
     }
 

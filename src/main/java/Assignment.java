@@ -1,3 +1,5 @@
+import net.minidev.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,5 +62,16 @@ public class Assignment {
         for (int i = 0; i < subjects.size(); i++) {
             System.out.println(subjects.get(i) + ": " + cards[i]);
         }
+    }
+
+    public String toJSONString() {
+        JSONObject o = new JSONObject();
+        o.put("subjects", subjects);
+        JSONObject s = new JSONObject();
+        for (int i = 0; i < apps.size(); i++) {
+            s.put(apps.get(i).label(), selected.get(i));
+        }
+        o.put("selections", s);
+        return o.toJSONString();
     }
 }

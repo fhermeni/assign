@@ -32,7 +32,7 @@ public class AssignmentProblem {
     public AssignmentProblem(Applications apps) {
         pp = new LinearPenalty();
         this.apps = apps;
-        subjectId = new HashMap<String, Integer>();
+        subjectId = new HashMap<>();
         int i = 0;
         for (String s : apps.getSubjects()) {
             subjectId.put(s, i++);
