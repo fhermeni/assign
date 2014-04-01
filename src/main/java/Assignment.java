@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A solution to an {@link AssignmentProblem}.
  * @author Fabien Hermenier
  */
 public class Assignment {
@@ -14,17 +15,32 @@ public class Assignment {
 
     private List<String> selected;
 
+    /**
+     * New assignment.
+     *
+     * @param subjects the possible subjects.
+     */
     public Assignment(List<String> subjects) {
         this.subjects = subjects;
-        this.apps = new ArrayList<Application>();
-        this.selected = new ArrayList<String>();
+        this.apps = new ArrayList<>();
+        this.selected = new ArrayList<>();
     }
 
+    /**
+     * Declare a partial assignment.
+     * @param a the application
+     * @param choice the selected option. Shoud belong to {@code a#options()}
+     */
     public void add(Application a, String choice) {
         apps.add(a);
         this.selected.add(choice);
     }
 
+    /**
+     * Get the selected option
+     * @param a the application
+     * @return the assigned option
+     */
     public String selected(Application a) {
         return selected.get(a.id());
     }
@@ -50,8 +66,8 @@ public class Assignment {
             cdf[pos]++;
             cards[subjects.indexOf(selected.get(i))]++;
         }
-        System.out.println("Nb groups: " + apps.size());
-        System.out.println("Nb of selections with penalty <= x : ");
+        System.out.println("#assignments: " + apps.size());
+        System.out.println("Nb of assignments with choice ranking <= x : ");
         int s = 0;
         for (int i = 0; i < cdf.length; i++) {
             int p = cdf[i];

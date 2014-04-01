@@ -1,6 +1,7 @@
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -41,5 +42,24 @@ public class AssignmentProblemTest {
             res.add(s.get(idx));
         }
         return new ArrayList<>(res);
+    }
+
+    @Test
+    public void test2() throws Exception {
+        Applications apps = Applications.fromJSON(new File("src/test/resources/sample_input.json"));
+        AssignmentProblem ap = new AssignmentProblem(apps);
+        ap.maxConcurrency(1);
+        Assignment res = ap.compute();
+        Assert.assertNotNull(res);
+        //System.out.println(res);
+        res.printStatistics();
+
+        ap = new AssignmentProblem(apps);
+        ap.penaltyPolicy(new ExponentialPenalty());
+        ap.maxConcurrency(1);
+        res = ap.compute();
+        Assert.assertNotNull(res);
+        //System.out.println(res);
+        res.printStatistics();
     }
 }

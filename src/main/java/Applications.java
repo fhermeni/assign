@@ -64,10 +64,9 @@ public class Applications {
             apps = new Applications(toString((JSONArray) jo.get("subjects")));
 
             //Get all the choices
-            JSONArray choices = (JSONArray) jo.get("choices");
-            for (Object o : choices) {
-                String lbl = ((JSONObject) o).get("label").toString();
-                List<String> selection = toString((JSONArray) ((JSONObject) o).get("selection"));
+            JSONObject choices = (JSONObject) jo.get("choices");
+            for (String lbl : choices.keySet()) {
+                List<String> selection = toString((JSONArray) choices.get(lbl));
                 if (apps.add(lbl, selection) == null) {
                     throw new IOException("Application '" + lbl + "' contains unknown subjects");
                 }

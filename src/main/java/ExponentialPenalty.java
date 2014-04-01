@@ -10,12 +10,9 @@ public class ExponentialPenalty implements PenaltyPolicy {
 
     @Override
     public int next() {
-        if (i == 0) {
-            i = 1;
-            return 0;
-        }
-        i *= 2;
-        return i/2;
+        int old = i;
+        i = 2 * i + 1;
+        return old;
     }
 
     @Override
