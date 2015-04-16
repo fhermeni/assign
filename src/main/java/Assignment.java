@@ -1,7 +1,9 @@
 import net.minidev.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A solution to an {@link AssignmentProblem}.
@@ -11,9 +13,7 @@ public class Assignment {
 
     private List<String> subjects;
 
-    private List<Application> apps;
-
-    private List<String> selected;
+    private Map<Application, String> assigns;
 
     /**
      * New assignment.
@@ -22,8 +22,7 @@ public class Assignment {
      */
     public Assignment(List<String> subjects) {
         this.subjects = subjects;
-        this.apps = new ArrayList<>();
-        this.selected = new ArrayList<>();
+        assigns = new HashMap<>();
     }
 
     /**
@@ -32,8 +31,7 @@ public class Assignment {
      * @param choice the selected option. Shoud belong to {@code a#options()}
      */
     public void add(Application a, String choice) {
-        apps.add(a);
-        this.selected.add(choice);
+        assigns.put(a, choice);
     }
 
     /**
@@ -42,38 +40,58 @@ public class Assignment {
      * @return the assigned option
      */
     public String selected(Application a) {
-        return selected.get(a.id());
+        return assigns.get(a);
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (Application a : apps) {
-            b.append("Group ").append(a.id()).append(": among").append(a.selections()).append(" got ").append(selected.get(a.id())).append("\n");
+        for (Map.Entry<Application, String>  e : assigns.entrySet()) {
+            b.append("Equipe '").append(e.getKey().label()).append("': among ").append(e.getKey().selections()).append(" => ").append(e.getValue()).append("\n");
         }
         return b.toString();
     }
 
-    public void printStatistics() {
+    public Set<Application> getApps() {
+        return assigns.keySet();
+    }
+
+
+    public void printPenaltiesCDF() {
         int nbPos = 0;
-        for (Application a: apps) {
-             nbPos = Math.max(a.selections().size(), nbPos);
+        for (Application a : assigns.keySet()) {
+            nbPos = Math.max(a.selections().size(), nbPos);
         }
-        int [] cdf = new int[nbPos];
-        int [] cards = new int[subjects.size()];
-        for (int i = 0; i < apps.size(); i++) {
-            int pos = apps.get(i).selections().indexOf(selected.get(i));
+        int[] cdf = new int[assigns.size()];
+
+        for (Application a : assigns.keySet()) {
+            int pos = a.selections().indexOf(getSelection(a));
+            if (pos < 0) {
+                System.err.println(a + " " + getSelection(a) + " " + a.selections());
+            }
             cdf[pos]++;
-            cards[subjects.indexOf(selected.get(i))]++;
         }
-        System.out.println("#assignments: " + apps.size());
+        System.out.println("#assignments: " + assigns.size());
         System.out.println("Nb of assignments with choice ranking <= x : ");
         int s = 0;
         for (int i = 0; i < cdf.length; i++) {
+            if (s == assigns.size()) {
+                break;
+            }
             int p = cdf[i];
-            s+=p;
+            s += p;
             System.out.println(i + ": " + s);
         }
+    }
+
+    public void printDistribution() {
+        int[] cards = new int[subjects.size()];
+        for (Application a : assigns.keySet()) {
+            String s = getSelection(a);
+            int pos = subjects.indexOf(s);
+            cards[pos]++;
+        }
+
         System.out.println("Distribution of the selection: ");
         for (int i = 0; i < subjects.size(); i++) {
             System.out.println(subjects.get(i) + ": " + cards[i]);
@@ -84,10 +102,14 @@ public class Assignment {
         JSONObject o = new JSONObject();
         o.put("subjects", subjects);
         JSONObject s = new JSONObject();
-        for (int i = 0; i < apps.size(); i++) {
-            s.put(apps.get(i).label(), selected.get(i));
+        for (Map.Entry<Application, String> e : assigns.entrySet()) {
+            s.put(e.getKey().label(), e.getValue());
         }
         o.put("selections", s);
         return o.toJSONString();
+    }
+
+    public String getSelection(Application app) {
+        return assigns.get(app);
     }
 }

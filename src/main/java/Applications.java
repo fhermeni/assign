@@ -24,13 +24,17 @@ public class Applications {
         this.applications = new ArrayList<>();
     }
 
-    public Application add(String id, List<String> selections) {
+    public Application add(String id, List<String> selections, boolean def) {
         if (!subjects.containsAll(selections)) {
             return null;
         }
-        Application app = new Application(applications.size(), id, selections);
+        Application app = new Application(applications.size(), id, selections, def);
         applications.add(app);
         return app;
+    }
+
+    public Application add(String id, List<String> selections) {
+        return add(id, selections, false);
     }
 
     public List<String> getSubjects() {
@@ -55,7 +59,6 @@ public class Applications {
 
     public static Applications fromJSON(File f) throws IOException, ParseException {
         JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
-        List<String> subjects = new ArrayList<String>();
         Applications apps = null;
         try (FileInputStream in = new FileInputStream(f)) {
             JSONObject jo = (JSONObject) p.parse(in);
@@ -66,9 +69,15 @@ public class Applications {
             //Get all the choices
             JSONObject choices = (JSONObject) jo.get("choices");
             for (String lbl : choices.keySet()) {
-                List<String> selection = toString((JSONArray) choices.get(lbl));
-                if (apps.add(lbl, selection) == null) {
-                    throw new IOException("Application '" + lbl + "' contains unknown subjects");
+                if( choices.get(lbl) instanceof JSONArray) {
+                    List<String> selection = toString((JSONArray) choices.get(lbl));
+                    if (apps.add(lbl, selection) == null) {
+                        throw new IOException("Application '" + lbl + "' contains unknown subjects");
+                    }
+                } else {
+                    if (choices.get(lbl).equals("*")) {
+                        apps.add(lbl, apps.getSubjects(), true);
+                    }
                 }
             }
         }
